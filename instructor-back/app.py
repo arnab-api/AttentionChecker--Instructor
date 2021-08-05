@@ -21,17 +21,42 @@ def getRandomGaze(limit = 20):
 
 @app.route('/api/get_current_gaze')
 def getCurrentGaze():
-    return jsonify(GazeManager.gazeContainer)
+    return jsonify(GazeManager.getCurrentHeatmap())
+
+@app.route('/api/save_gaze')
+def saveCurrentGaze():
+    GazeManager.saveCurrentHeatmap()
+    return "saved gaze"
 
 @app.route('/api/post_gaze', methods=['POST']) 
 def receiveGazeDataFromStudents():
+    GazeManager.clearGazeContainer()
     data = request.json
     print(json.dumps(data, indent=2), type(data))
     processed = GazeManager.processGazeDataFromStudents(data)
     print(json.dumps(processed, indent=2), type(processed))
-
     GazeManager.updateGazeContainer(processed)
     return jsonify(processed)
+
+@app.route("/api/clearGazeContainer")
+def clearGazeContainer():
+    GazeManager.clearGazeContainer()
+    return "cleared gaze contaner"
+
+@app.route('/api/post_gaze_sim', methods=['POST']) 
+def receiveGazeDataFromStudents__Simulation():
+    data = request.data
+    print(data, type(data))
+    data = data.decode('utf8').replace("'", '"')
+    data = json.loads(data)
+    print(json.dumps(data, indent=2), type(data))
+
+    userid = data["userid"]
+    gazedata = data["gazedata"]
+
+    GazeManager.updateGazeContainer(gazedata)
+    return "Successfully pushed data to container <> {}".format(userid)
+    # GazeManager.updateGazeContainer(data)
 
 if __name__ == "__main__":
     app.run(

@@ -5,37 +5,12 @@ import Button from "@material-ui/core/Button";
 import CachedIcon from "@material-ui/icons/Cached";
 import axios from "axios";
 
-export const HomePage = () => {
+export const HomePage_sim = () => {
     const canvasHeight = 500;
     const canvasWidth = canvasHeight * (16 / 9);
 
     const [heatmapInstance, setHeatMapInstance] = useState();
     const [heatMapPoints, setHeatmapPoints] = useState([]);
-
-    const getRandomHeatMap = (len = 20) => {
-        // now generate some random data
-        var points = [];
-        var max = 0;
-
-        while (len--) {
-            var val = Math.floor(Math.random() * 100);
-            max = Math.max(max, val);
-            var point = {
-                x: Math.floor(Math.random() * canvasWidth),
-                y: Math.floor(Math.random() * canvasHeight),
-                value: val,
-            };
-            points.push(point);
-        }
-
-        // heatmap data format
-        var data = {
-            max: max,
-            data: points,
-        };
-
-        return data;
-    };
 
     const convertHeatMapPointsForProjection = (heatpoints) => {
         var points = [];
@@ -68,12 +43,6 @@ export const HomePage = () => {
         heatmapInstance.setData(heatmapdata);
     };
 
-    const refreshHeatCanvas = () => {
-        let heatmapdata = getRandomHeatMap();
-        console.log("refreshing heat canvas", heatmapdata)
-        populateHeatMap(heatmapInstance, heatmapdata);
-    };
-
     const url = "get_current_gaze";
     const refreshHeatCanvas_backend = () => {
         axios.get("/api/"+url)
@@ -88,19 +57,16 @@ export const HomePage = () => {
             });
     };
 
-    const [counter, setCounter] = useState(10)
-    let curval = 10
-    const countDown = () => {
-        console.log("countdown called >> ", curval, counter)
-        if(curval ===1){
-            curval = 10
-            setCounter(10);
-            return
-        }
-        curval -= 1
-        setCounter(curval)
-    }
+    const clearGazeContainerBackend = () => {
+        componentDidMount()
+        axios.get("/api/clearGazeContainer")
+            .then((response) => {
+                console.log("clearing gaze container")
+            }).catch((error) => {
 
+            })
+    }
+    
     const saveGazeContainerBackend = () => {
         axios.get("/api/save_gaze")
             .then((response) => {
@@ -110,11 +76,20 @@ export const HomePage = () => {
             })
     }
 
-    const ref = useRef(null);
-
     useEffect(() => {
         let tmp = h337.create({
             container: document.querySelector(".HeatmapContainer"),
+            // radius: 10,
+            // maxOpacity: .5,
+            // minOpacity: 0,
+            // blur: .75,
+            // gradient: {
+            //   // enter n keys between 0 and 1 here
+            //   // for gradient color customization
+            //   '.5': 'blue',
+            //   '.8': 'red',
+            //   '.95': 'white'
+            // }
         });
         setHeatMapInstance(tmp);
         // let heatmapdata = getRandomHeatMap();
@@ -129,36 +104,61 @@ export const HomePage = () => {
             }).catch((error) => {
 
             });
-        setInterval(() => {
-            ref.current.click();
-          }, 10*1000); //miliseconds
-        setInterval(countDown, 1000);
     }, []);
+
+    const componentDidMount = () => {
+        // var c = document.getElementsByClassName("heatmap-canvas");
+        // var ctx = c.getContext("2d");
+        // ctx.beginPath();
+        // ctx.moveTo(0, 0);
+        // ctx.lineTo(300, 150);
+        // ctx.stroke();
+
+        var ctx = document.getElementById('grid').getContext('2d');
+        // ctx.fillStyle = "rgb(200,0,0)";
+        ctx.strokeStyle = 'black';
+        ctx.beginPath();    
+        for (var x = 0, i = 0; i < 3; x+=canvasWidth/3, i++) {
+            for (var y = 0, j=0; j < 3; y+=canvasHeight/3, j++) {            
+                ctx.strokeRect (x, y, canvasWidth/3, canvasHeight/3);
+            }
+        }
+        // ctx.fill();
+        // ctx.moveTo(0, 0);
+        // ctx.lineTo(canvasWidth, canvasHeight);
+        ctx.closePath();
+    }
     
 
     return (
         <>
             <div
                 className="HeatmapContainer"
+                id="heatmap"
                 style={{
                     height: canvasHeight,
                     width: canvasWidth,
                     border: "2px solid black",
-                }}
-            ></div>
+                }}   
+            >
+                <canvas id="grid" width={canvasWidth} height={canvasHeight}/>
+            </div>
             <Button 
-                ref = {ref}
                 startIcon={<CachedIcon />}
                 onClick={refreshHeatCanvas_backend}
             >
                 Refresh
             </Button>
             <Button 
+                onClick={clearGazeContainerBackend}
+            >
+                Re-Initialize
+            </Button>
+            <Button 
                 onClick={saveGazeContainerBackend}
             >
                 Save Gaze
             </Button>
-            <h1> Refreshig in: {counter} seconds</h1>
         </>
     );
 };

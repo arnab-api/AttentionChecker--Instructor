@@ -1,12 +1,36 @@
 import random
+import json
+import datetime
 
 class GazeManager:
-    gazeContainer = []
-    
-    def updateGazeContainer(processed_gaze_arr):
-        GazeManager.gazeContainer = []
-        GazeManager.gazeContainer += processed_gaze_arr
+    gazeContainer = {}
 
+    @staticmethod
+    def updateGazeContainer(processed_gaze_arr):
+        for gaze in processed_gaze_arr:
+            x = round(gaze['x'], 3)
+            y = round(gaze['y'], 3)
+            if((x, y) not in GazeManager.gazeContainer):
+                GazeManager.gazeContainer[(x, y)] = 0
+            GazeManager.gazeContainer[(x, y)] += gaze['value']
+
+    @staticmethod
+    def clearGazeContainer():
+        GazeManager.gazeContainer.clear()
+
+    @staticmethod
+    def getCurrentHeatmap():
+        gazeContainer = GazeManager.gazeContainer
+        heatmap = []
+        for cord in gazeContainer:
+            heatmap.append({
+                "x"     : cord[0],
+                "y"     : cord[1],
+                "value" : gazeContainer[cord] 
+            })
+        return heatmap
+
+    @staticmethod
     def processGazeDataFromStudents(data):
         screenHeight = data["screenHeight"]
         screenWidth  = data["screenWidth"]
@@ -23,6 +47,13 @@ class GazeManager:
                 })
         return gazedata
 
+
+    @staticmethod
+    def saveCurrentHeatmap():
+        with open("saved_gazedata/gaze_{}.json".format(datetime.datetime.now().isoformat()), "w") as f:
+            json.dump(GazeManager.getCurrentHeatmap(), f)
+
+    @staticmethod
     def getRandomGaze(limit = 20):
         screenHeight = 641
         screenWidth = 1310
