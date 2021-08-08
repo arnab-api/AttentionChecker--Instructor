@@ -1,6 +1,7 @@
 import random
 import json
 import datetime
+from Utils import Utils
 
 class GazeManager:
     gazeContainer = {}
@@ -50,7 +51,9 @@ class GazeManager:
 
     @staticmethod
     def saveCurrentHeatmap():
-        with open("saved_gazedata/gaze_{}.json".format(datetime.datetime.now().isoformat()), "w") as f:
+        path = "saved_gazedata/user_4/"
+        Utils.makeDirectory(path)
+        with open(path + "gaze_{}.json".format(datetime.datetime.now().isoformat()), "w") as f:
             json.dump(GazeManager.getCurrentHeatmap(), f)
 
     @staticmethod
