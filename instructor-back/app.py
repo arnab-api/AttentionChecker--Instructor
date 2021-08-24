@@ -5,6 +5,7 @@ import json
 import random
 
 from GazeManager import GazeManager
+from SessionManager import SessionManager
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -21,6 +22,7 @@ def getRandomGaze(limit = 20):
 
 @app.route('/api/get_current_gaze')
 def getCurrentGaze():
+    print("")
     return jsonify(GazeManager.getCurrentHeatmap())
 
 @app.route('/api/save_gaze')
@@ -57,6 +59,39 @@ def receiveGazeDataFromStudents__Simulation():
     GazeManager.updateGazeContainer(gazedata)
     return "Successfully pushed data to container <> {}".format(userid)
     # GazeManager.updateGazeContainer(data)
+
+
+############################################################################################################
+
+@app.route('/api/post_gazestream', methods=['POST']) 
+def receiveGazeStreamFromStudents():
+    data = request.json
+    # print(json.dumps(data, indent=2), type(data))
+    
+    SessionManager.updateGazeStream(data)
+    return "received gaze stream"
+
+@app.route("/api/clear_session")
+def clearSession():
+    SessionManager.clearGazeSession()
+    return "cleared gaze session data"
+
+
+@app.route("/api/save_session")
+def saveSession():
+    timestamp = SessionManager.saveCurrentSession()
+    return "saved current session -- {}".format(timestamp)
+
+
+@app.route("/api/load_session_last/<limit_second>")
+def loadHeatMapFromSession(limit_second = 10):
+    return jsonify(GazeManager.getHeatmapFromSession(int(limit_second)))
+
+
+@app.route("/api/load_session")
+def loadHeatMapFromFullSession():
+    return jsonify(GazeManager.getFullSession())
+
 
 if __name__ == "__main__":
     app.run(

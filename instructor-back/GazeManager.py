@@ -2,6 +2,7 @@ import random
 import json
 import datetime
 from Utils import Utils
+from SessionManager import SessionManager
 
 class GazeManager:
     gazeContainer = {}
@@ -48,10 +49,9 @@ class GazeManager:
                 })
         return gazedata
 
-
     @staticmethod
     def saveCurrentHeatmap():
-        path = "saved_gazedata/user_4/"
+        path = "saved_gazedata/iict_1/"
         Utils.makeDirectory(path)
         with open(path + "gaze_{}.json".format(datetime.datetime.now().isoformat()), "w") as f:
             json.dump(GazeManager.getCurrentHeatmap(), f)
@@ -75,3 +75,57 @@ class GazeManager:
             limit -= 1
 
         return gazedata
+
+    ###########################################################################
+
+    @staticmethod
+    def getHeatmapFromSession(limit_second = 10):
+        GazeManager.clearGazeContainer()
+
+        latest = 0
+        all_sessions = SessionManager.gazesession
+        for session in all_sessions:
+            curr = all_sessions[session][-1]["timestamp"]
+            time_now = Utils.getSecondFromTimeStamp(curr)
+            latest = max(latest, time_now)
+        
+        frm = latest
+        for session in  all_sessions:
+            it = 1
+            while(True):
+                data = all_sessions[session][-it]
+                time_now = Utils.getSecondFromTimeStamp(data["timestamp"])
+                if(time_now < latest - limit_second):
+                    break
+                frm = min(latest, time_now)
+                x = data["gaze"]["x"]
+                y = data["gaze"]["y"]
+
+                if((x, y) not in GazeManager.gazeContainer):
+                    GazeManager.gazeContainer[(x, y)] = 0
+                GazeManager.gazeContainer[(x, y)] += 1
+
+                it+=1
+
+        print("loaded gaze data from {} to {}".format(frm, latest))
+
+        return GazeManager.getCurrentHeatmap()
+
+    @staticmethod
+    def getFullSession():
+        GazeManager.clearGazeContainer()
+        all_sessions = SessionManager.gazesession
+
+        for session in  all_sessions:
+            for i in range(len(all_sessions[session])):
+                data = all_sessions[session][-i]
+                x = data["gaze"]["x"]
+                y = data["gaze"]["y"]
+
+                if((x, y) not in GazeManager.gazeContainer):
+                    GazeManager.gazeContainer[(x, y)] = 0
+                GazeManager.gazeContainer[(x, y)] += 1
+
+
+        print("loaded full session data")
+        return GazeManager.getCurrentHeatmap()

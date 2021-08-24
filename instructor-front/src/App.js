@@ -4,6 +4,8 @@
 import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import { HomePage } from "./Pages/HomePage/HomePage";
 import { HomePage_sim } from "./Pages/HomePage/Homepage_sim";
+import { HomePage_session } from "./Pages/HomePage/Homepage_session";
+
 
 function App() {
     return (
@@ -14,6 +16,9 @@ function App() {
                 </Route>
                 <Route exact path="/simulation">
                     <HomePage_sim />
+                </Route>
+                <Route exact path="/session">
+                    <HomePage_session />
                 </Route>
             </Switch>
         </Router>
