@@ -4,6 +4,9 @@ import h337 from "heatmap.js";
 import Button from "@material-ui/core/Button";
 import CachedIcon from "@material-ui/icons/Cached";
 import axios from "axios";
+import Switch from '@material-ui/core/Switch';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 export const HomePage_session = () => {
     const canvasHeight = 500;
@@ -146,6 +149,27 @@ export const HomePage_session = () => {
         ctx.closePath();
     }
     
+    const [checked, setChecked] = React.useState(false);
+
+    const ref = useRef(null);
+    // let refreshing_interval = null;
+    const [refresh, setRefresh] = React.useState(null)
+
+    const toggleChecked = () => {
+      setChecked((prev) => !prev);
+      console.log(checked)
+      if(checked == false){
+          console.log(" >>> starting auto refresh >>> ");
+          setRefresh(setInterval(() => {
+            ref.current.click();
+          }, session_data_load_interval*1000)); //miliseconds
+      }
+      else{
+          console.log("turning off auto refresh");
+          clearInterval(refresh);
+          setRefresh(null);
+      }
+    };
 
     return (
         <>
@@ -161,10 +185,11 @@ export const HomePage_session = () => {
                 <canvas id="grid" width={canvasWidth} height={canvasHeight}/>
             </div>
             <Button 
+                ref = {ref}
                 startIcon={<CachedIcon />}
                 onClick={refreshHeatCanvas_backend}
             >
-                Load last {session_data_load_interval} second data
+                Last {session_data_load_interval} seconds
             </Button>
             <Button 
                 startIcon={<CachedIcon />}
@@ -182,6 +207,12 @@ export const HomePage_session = () => {
             >
                 Save Session
             </Button>
+            <FormGroup>
+                <FormControlLabel
+                    control={<Switch checked={checked} onChange={toggleChecked} />}
+                    label="Auto Reload"
+                />
+            </FormGroup>
         </>
     );
 };
