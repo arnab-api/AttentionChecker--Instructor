@@ -107,7 +107,7 @@ def loadHeatMapFromFullSession():
 if __name__ == "__main__":
     # print("assets directory >> ", ASSETS_DIR)
     # context = ('local.crt', 'local.key')#certificate and key files
-    with open("backend_config.json", "r") as f:
+    with open("backend_config.cert.json", "r") as f:
         config = json.load(f)
     print(json.dumps(config, indent=2))
     context = (config["certificate"], config["key"])
