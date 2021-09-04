@@ -7,13 +7,15 @@ import random
 from GazeManager import GazeManager
 from SessionManager import SessionManager
 
+
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
 #######################################################################
 @app.route('/')
 def hello():
-    return "Hello World!"
+    return "<h1>Attention Checker Backend is Active!!!</h1>"
 
 @app.route('/api/cors', methods=['POST']) 
 def cors_check():
@@ -100,9 +102,18 @@ def loadHeatMapFromFullSession():
     return jsonify(GazeManager.getFullSession())
 
 
+# ASSETS_DIR = os.path.dirname(os.path.abspath(__file__))
+
 if __name__ == "__main__":
+    # print("assets directory >> ", ASSETS_DIR)
+    # context = ('local.crt', 'local.key')#certificate and key files
+    with open("backend_config.json", "r") as f:
+        config = json.load(f)
+    print(json.dumps(config, indent=2))
+    context = (config["certificate"], config["key"])
     app.run(
         host=os.getenv('IP', '0.0.0.0'), 
         port=int(os.getenv('PORT', 3005)), 
-        debug=True
+        debug=True,
+        ssl_context=context
     )
