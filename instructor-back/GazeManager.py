@@ -92,7 +92,13 @@ class GazeManager:
         frm = latest
         for session in  all_sessions:
             it = 1
+            if(len(all_sessions[session]) == 0):
+                print("session {} do not have any data yet to plot".format(session))
+                continue
             while(True):
+                # print(" >>>> ", len(all_sessions[session]))
+                if(it > len(all_sessions[session])):
+                    break
                 data = all_sessions[session][-it]
                 time_now = Utils.getSecondFromTimeStamp(data["timestamp"])
                 if(time_now < latest - limit_second):
@@ -116,7 +122,10 @@ class GazeManager:
         GazeManager.clearGazeContainer()
         all_sessions = SessionManager.gazesession
 
+        session_cnt = 0
+        gaze_point_cnt = 0
         for session in  all_sessions:
+            session_cnt += 1
             for i in range(len(all_sessions[session])):
                 data = all_sessions[session][-i]
                 x = data["gaze"]["x"]
@@ -125,7 +134,8 @@ class GazeManager:
                 if((x, y) not in GazeManager.gazeContainer):
                     GazeManager.gazeContainer[(x, y)] = 0
                 GazeManager.gazeContainer[(x, y)] += 1
+                gaze_point_cnt += 1
 
 
-        print("loaded full session data")
+        print("loaded full session data -- session count: {} -- gaze points: {}".format(session_cnt, gaze_point_cnt))
         return GazeManager.getCurrentHeatmap()
