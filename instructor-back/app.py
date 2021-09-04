@@ -10,10 +10,17 @@ from SessionManager import SessionManager
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
-
+#######################################################################
 @app.route('/')
 def hello():
     return "Hello World!"
+
+@app.route('/api/cors', methods=['POST']) 
+def cors_check():
+    data = request.json
+    print("received ==> {}".format(data))
+    return "cors check >> {}\n".format(data)
+#######################################################################
 
 @app.route('/api/get_random_gaze')
 def getRandomGaze(limit = 20):
