@@ -15,7 +15,17 @@ CORS(app, supports_credentials=True)
 #######################################################################
 @app.route('/')
 def hello():
-    return "<h1>Attention Checker Backend is Active!!!</h1>"
+    message = "<h1>Attention Checker Backend is Active!!!</h1><br>"
+    session_state = SessionManager.gazesession
+    if(not session_state):
+        message += "Currently there are no active sessions"
+    else:
+        message += "<ul>"
+        for session in session_state:
+            message += "<li>session {} >> {} gaze points</li>".format(session, len(session_state[session]))
+        message += "</ul>"
+
+    return message
 
 @app.route('/api/cors', methods=['POST']) 
 def cors_check():
@@ -106,13 +116,15 @@ def loadHeatMapFromFullSession():
 
 if __name__ == "__main__":
     # print("assets directory >> ", ASSETS_DIR)
-    # context = ('local.crt', 'local.key')#certificate and key files
+    context = ('local.crt', 'local.key')#certificate and key files
     with open("backend_config.cert.json", "r") as f:
         config = json.load(f)
     print(json.dumps(config, indent=2))
     context = (config["certificate"], config["key"])
+    print(os.getenv('IP', '0.0.0.0'))
     app.run(
-        host=os.getenv('IP', '0.0.0.0'), 
+        # host=os.getenv('IP', '10.100.94.40'), 
+        host='0.0.0.0',
         port=int(os.getenv('PORT', 3005)), 
         debug=True,
         ssl_context=context
