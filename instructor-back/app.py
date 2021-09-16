@@ -90,6 +90,14 @@ def receiveGazeStreamFromStudents():
     SessionManager.updateGazeStream(data)
     return "received gaze stream"
 
+@app.route('/api/register_calibration', methods=['POST']) 
+def receiveCalibrationRegisterNotification():
+    data = request.json
+    # print(json.dumps(data, indent=2), type(data))
+    
+    SessionManager.updateCalibrationInfo(data)
+    return "received gaze stream"
+
 @app.route("/api/clear_session")
 def clearSession():
     SessionManager.clearGazeSession()

@@ -5,6 +5,7 @@ from Utils import Utils
 
 class SessionManager:
     gazesession = {}
+    calibration_track = {}
 
     @staticmethod
     def updateGazeStream(stream):
@@ -36,7 +37,17 @@ class SessionManager:
     @staticmethod
     def clearGazeSession():
         SessionManager.gazesession.clear()
+        SessionManager.calibration_track.clear()
         print(SessionManager.gazesession)
+
+    @staticmethod
+    def updateCalibrationInfo(data):
+        if(data["session"] not in SessionManager.calibration_track):
+            SessionManager.calibration_track[data["session"]] = data
+            print("registered calibration for session >> ", data["session"])
+        else:
+            SessionManager.calibration_track[data["session"]] = data
+            print("calibration update >> {}".format(data["session"]))
 
     @staticmethod
     def saveCurrentSession():
@@ -45,6 +56,9 @@ class SessionManager:
         Utils.makeDirectory(path)
         with open(path + "session_{}.json".format(timestamp), "w") as f:
             json.dump(SessionManager.gazesession, f)
+        
+        with open(path + "calibration_{}.json".format(timestamp), "w") as f:
+            json.dump(SessionManager.calibration_track, f)
         
         path += "individual/"
         Utils.makeDirectory(path)
