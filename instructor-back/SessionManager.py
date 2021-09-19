@@ -57,7 +57,7 @@ class SessionManager:
     @staticmethod
     def saveCurrentSession():
         timestamp = datetime.datetime.now().isoformat()
-        path_root = "/cifs/drobo-lc/drobo-lc/mamin17/arnab"
+        path_root = "/cifs/drobo-lc/drobo-lc/mamin17/arnab/"
         # path_root = ""
         path = path_root + "saved_sessions/session_{}/".format(timestamp)
         Utils.makeDirectory(path)
