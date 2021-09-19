@@ -74,5 +74,6 @@ class SessionManager:
         #         json.dump(SessionManager.gazesession[session], f)
 
         print(" --- Saved current session data --- >> {} individual sesions".format(len(list(SessionManager.gazesession.keys()))))
+        print("session_{}.json".format(timestamp))
 
         return timestamp
