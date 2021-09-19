@@ -1,2 +1,4 @@
 *.pem
 *.cert.*
+instructor-back/saved_gazedata/*
+instructor-back/saved_sessions/*

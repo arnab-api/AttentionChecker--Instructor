@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 import json
 import random
+import sys
 
 from GazeManager import GazeManager
 from SessionManager import SessionManager
@@ -85,10 +86,10 @@ def receiveGazeDataFromStudents__Simulation():
 @app.route('/api/post_gazestream', methods=['POST']) 
 def receiveGazeStreamFromStudents():
     data = request.json
-    # print(json.dumps(data, indent=2), type(data))
+    # print(json.dumps(data, indent=2), type(data), sys.getsizeof(data))
     
     SessionManager.updateGazeStream(data)
-    return "received gaze stream"
+    return "received gaze stream from {} -- {} gaze points".format(data["session"], len(data["gaze"]))
 
 @app.route('/api/register_calibration', methods=['POST']) 
 def receiveCalibrationRegisterNotification():

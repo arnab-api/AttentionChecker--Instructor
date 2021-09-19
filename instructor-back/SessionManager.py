@@ -26,8 +26,13 @@ class SessionManager:
             x = round(x, 3)
             y = round(y, 3)
             gazestream.append({
-                "gaze"      : {"x": x, "y": y},
-                "timestamp" : timestamp
+                "gaze"          : {"x": x, "y": y},
+                "gazefeatures"  : {
+                    "gaze"  : [gaze["x"], gaze["y"]],
+                    "screen": [stream["screenWidth"], stream["screenHeight"]] 
+                },
+                "face"          : gaze["face"],
+                "timestamp"     : timestamp,
             })
         
         print("received data from {} -- {} gaze points".format(cur_session, len(gazestream)))
@@ -52,7 +57,9 @@ class SessionManager:
     @staticmethod
     def saveCurrentSession():
         timestamp = datetime.datetime.now().isoformat()
-        path = "saved_sessions/session_{}/".format(timestamp)
+        path_root = "/cifs/drobo-lc/drobo-lc/mamin17/arnab"
+        # path_root = ""
+        path = path_root + "saved_sessions/session_{}/".format(timestamp)
         Utils.makeDirectory(path)
         with open(path + "session_{}.json".format(timestamp), "w") as f:
             json.dump(SessionManager.gazesession, f)
@@ -60,11 +67,11 @@ class SessionManager:
         with open(path + "calibration_{}.json".format(timestamp), "w") as f:
             json.dump(SessionManager.calibration_track, f)
         
-        path += "individual/"
-        Utils.makeDirectory(path)
-        for session in SessionManager.gazesession:
-            with open(path + "{}.json".format(session), "w") as f:
-                json.dump(SessionManager.gazesession[session], f)
+        # path += "individual/"
+        # Utils.makeDirectory(path)
+        # for session in SessionManager.gazesession:
+        #     with open(path + "{}.json".format(session), "w") as f:
+        #         json.dump(SessionManager.gazesession[session], f)
 
         print(" --- Saved current session data --- >> {} individual sesions".format(len(list(SessionManager.gazesession.keys()))))
 
