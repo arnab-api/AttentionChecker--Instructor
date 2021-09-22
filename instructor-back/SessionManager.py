@@ -59,7 +59,9 @@ class SessionManager:
         timestamp = datetime.datetime.now().isoformat()
         path_root = "/cifs/drobo-lc/drobo-lc/mamin17/arnab/"
         # path_root = ""
-        path = path_root + "saved_sessions/session_{}/".format(timestamp)
+        path = path_root + "saved_sessions/"
+        Utils.makeDirectory(path)
+        path = path + "session_{}/".format(timestamp)
         Utils.makeDirectory(path)
         with open(path + "session_{}.json".format(timestamp), "w") as f:
             json.dump(SessionManager.gazesession, f)
