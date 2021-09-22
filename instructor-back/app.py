@@ -97,7 +97,7 @@ def receiveCalibrationRegisterNotification():
     # print(json.dumps(data, indent=2), type(data))
     
     SessionManager.updateCalibrationInfo(data)
-    return "received gaze stream"
+    return "confirmed calibration >> " + data["session"]
 
 @app.route("/api/clear_session")
 def clearSession():

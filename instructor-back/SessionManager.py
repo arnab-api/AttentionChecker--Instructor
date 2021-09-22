@@ -35,7 +35,7 @@ class SessionManager:
                 "timestamp"     : timestamp,
             })
         
-        print("received data from {} -- {} gaze points".format(cur_session, len(gazestream)))
+        print("{} : received data from {} -- {} gaze points".format(stream['TAG'],cur_session, len(gazestream)))
         SessionManager.gazesession[cur_session] += gazestream
 
 
