@@ -85,6 +85,9 @@ class GazeManager:
         latest = 0
         all_sessions = SessionManager.gazesession
         for session in all_sessions:
+            if(len(all_sessions[session]) == 0):
+                print("session {} does not have any data yet".format(session))
+                continue
             curr = all_sessions[session][-1]["timestamp"]
             time_now = Utils.getSecondFromTimeStamp(curr)
             latest = max(latest, time_now)
