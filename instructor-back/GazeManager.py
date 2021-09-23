@@ -107,6 +107,12 @@ class GazeManager:
                 x = data["gaze"]["x"]
                 y = data["gaze"]["y"]
 
+                x = max(0, x)
+                x = min(x, data["gazefeatures"]["screen"][0])
+
+                y = max(0, y)
+                y = min(y, data["gazefeatures"]["screen"][1])
+
                 if((x, y) not in GazeManager.gazeContainer):
                     GazeManager.gazeContainer[(x, y)] = 0
                 GazeManager.gazeContainer[(x, y)] += 1
