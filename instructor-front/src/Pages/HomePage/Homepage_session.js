@@ -14,6 +14,7 @@ export const HomePage_session = () => {
 
     const [heatmapInstance, setHeatMapInstance] = useState();
     const [heatMapPoints, setHeatmapPoints] = useState([]);
+    const [latestsavedsession, setLatestSavedSession] = useState("");
 
     const session_data_load_interval = 10
 
@@ -81,7 +82,8 @@ export const HomePage_session = () => {
         componentDidMount()
         axios.get("/api/clear_session")
             .then((response) => {
-                console.log("clearing gaze container")
+                console.log("clearing gaze container");
+                setLatestSavedSession("Session Cleared");
             }).catch((error) => {
 
             })
@@ -90,7 +92,10 @@ export const HomePage_session = () => {
     const saveGazeContainerBackend = () => {
         axios.get("/api/save_session")
             .then((response) => {
-                console.log("saving current session")
+                console.log("saving current session ---> ", response.data);
+                var today = new Date();
+                var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                setLatestSavedSession(time + " >> " + response.data);
             }).catch((error) => {
 
             })
@@ -213,6 +218,7 @@ export const HomePage_session = () => {
                     label="Auto Reload"
                 />
             </FormGroup>
+            <h2>&nbsp;&nbsp;{latestsavedsession}</h2>
         </>
     );
 };
