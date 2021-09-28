@@ -83,7 +83,7 @@ export const HomePage_session = () => {
         axios.get("/api/clear_session")
             .then((response) => {
                 console.log("clearing gaze container");
-                setLatestSavedSession("Session Cleared");
+                setLatestSavedSession(time + " >> Session Cleared");
             }).catch((error) => {
 
             })
